@@ -252,7 +252,7 @@ def tax_qa_assistant_respond(question: str) -> str:
 
 # === Main App ===
 st.markdown("### Upload your W-2 PDF file")
-uploaded_file = st.file_uploader("Choose a W-2 PDF to upload", type=["pdf"], key="w2_uploader")
+uploaded_file = st.file_uploader("Please upload a W-2 PDF file to get started.", type=["pdf"], key="w2_uploader")
 
 # View 2: Show the final summary if it's already calculated
 if "summary" in st.session_state:
@@ -303,8 +303,8 @@ elif uploaded_file:
                 st.rerun()  # Rerun to switch to the summary view
     else:
         st.error("⚠️ Failed to extract fields from the W-2 form. Please check your file or try another.")
-else:
-    st.info("Please upload a W-2 PDF file to get started.")
+#else:
+    #st.info("Please upload a W-2 PDF file to get started.")
 
 # === Chat Interface (always at the bottom) ===
 st.markdown("---")
