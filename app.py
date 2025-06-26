@@ -23,7 +23,7 @@ HEADERS = {
 # --- Initialize Chat Session State ---
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
-        {"role": "assistant", "content": "Hi! I'm your AI Tax Assistant 🤖. I'll help you upload your W-2, enter details, and compute your taxes. Let's get started!"}
+        {"role": "assistant", "content": "I'm your Tax Assistant. Ask me if you have any question."}
     ]
 
 # === PDF Processing ===
@@ -62,7 +62,7 @@ Extract the fields and respond only with JSON.
         ]
     }
 
-    with st.spinner("🧠 Extracting fields using Mistral via OpenRouter..."):
+    with st.spinner("🧠 Extracting fields ..."):
         response = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers=HEADERS,
@@ -172,7 +172,6 @@ def generate_tax_return_html(summary: dict) -> str:
         <title>Tax Return - {esc(summary.get('Filing Year',''))}</title>
     </head>
     <body style="font-family: sans-serif; background-color: #111; color: #fff; padding: 20px;">
-        <h2>Simple Tax Return Summary</h2>
         <p><strong>Employee Name:</strong> {esc(summary.get('Employee Name',''))}</p>
         <p><strong>Employer Name:</strong> {esc(summary.get('Employer Name',''))}</p>
         <p><strong>Filing Year:</strong> {esc(summary.get('Filing Year',''))}</p>
@@ -258,14 +257,14 @@ if "summary" in st.session_state:
 
     tax_return_html = generate_tax_return_html(summary)
     st.markdown("---")
-    st.markdown("### 🧾 Your Simplified Tax Return Form")
+    st.markdown("### 🧾 Your Tax Return Form")
     st.components.v1.html(tax_return_html, height=450, scrolling=True)
 
     buf = BytesIO()
     buf.write(tax_return_html.encode('utf-8'))
     buf.seek(0)
     st.download_button(
-        "📥 Download Tax Return Form (HTML)", 
+        "📥 Download Tax Return Form", 
         data=buf,
         file_name=f"tax_return_{summary.get('Filing Year','')}.html", 
         mime="text/html"
@@ -304,7 +303,7 @@ else:
 
 # === Chat Interface (always at the bottom) ===
 st.markdown("---")
-st.subheader("🤖 Chat with your AI Tax Assistant")
+st.subheader("🤖 Chat with GreenGrowth CPAs Tax Assistant")
 
 # Display chat history
 for message in st.session_state.chat_history:
