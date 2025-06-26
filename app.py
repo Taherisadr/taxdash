@@ -11,7 +11,8 @@ st.set_page_config(page_title="AI Tax Agent", layout="centered")
 st.title("📄 AI Tax Agent - W-2 Tax Return Prototype")
 
 # === OpenRouter Configuration ===
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = st.secrets["api_keys"]["openrouter"]
+
 MODEL = "mistralai/mistral-7b-instruct"
 HEADERS = {
     "Authorization": f"Bearer {OPENROUTER_API_KEY}",
