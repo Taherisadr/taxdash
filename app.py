@@ -210,6 +210,7 @@ def generate_tax_return_html(summary: dict) -> str:
     return html_content
 
 
+
 # === Chatbot Response ===
 def assistant_respond_with_llm(user_input):
     chat_history = st.session_state.chat_history
