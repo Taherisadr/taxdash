@@ -330,13 +330,19 @@ if user_input := st.chat_input("Ask a question about your taxes..."):
         
         
         
-        def escape_markdown(text):
-            import re
-            return re.sub(r'([*_`])', r'\\\1', text).replace("\n", "  \n")
+        def clean_model_response(text):
+            # Escape markdown characters
+            text = re.sub(r'([*_`])', r'\\\1', text)
+            # Fix long glued words/numbers (like 8,740.00islessthan...)
+            text = re.sub(r'(\d)([a-zA-Z])', r'\1 \2', text)
+            text = re.sub(r'([a-zA-Z])(\d)', r'\1 \2', text)
+            # Add Markdown-compatible newlines
+            return text.replace("\n", "  \n")
 
-        escaped = escape_markdown(response)
+        escaped = clean_model_response(response)
         st.markdown(escaped)
-
+        
+        
 
     
     # Add assistant response to history
