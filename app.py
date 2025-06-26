@@ -6,6 +6,8 @@ import re
 import html
 from io import BytesIO
 import re
+import time
+
 
 # --- Streamlit page setup ---
 st.set_page_config(page_title="AI Tax Agent", layout="centered")
@@ -322,26 +324,29 @@ if user_input := st.chat_input("Ask a question about your taxes..."):
 
     # Get and display assistant's response
     with st.chat_message("assistant"):
-    # Use the appropriate assistant based on context
+        # Use the appropriate assistant based on context
         if "summary" in st.session_state:
             response = tax_qa_assistant_respond(user_input)
         else:
             response = assistant_respond_with_llm(user_input)
-        
-        
-        
+    
         def clean_model_response(text):
             # Escape markdown characters
             text = re.sub(r'([*_`])', r'\\\1', text)
-            # Fix long glued words/numbers (like 8,740.00islessthan...)
             text = re.sub(r'(\d)([a-zA-Z])', r'\1 \2', text)
             text = re.sub(r'([a-zA-Z])(\d)', r'\1 \2', text)
-            # Add Markdown-compatible newlines
             return text.replace("\n", "  \n")
-
+    
         escaped = clean_model_response(response)
-        st.markdown(escaped)
-        
+    
+        # Typing effect simulation
+        placeholder = st.empty()
+        displayed_text = ""
+        for word in escaped.split():
+            displayed_text += word + " "
+            placeholder.markdown(displayed_text)
+            time.sleep(0.05)  # Adjust speed here
+            
         
 
     
