@@ -318,13 +318,15 @@ if user_input := st.chat_input("Ask a question about your taxes..."):
 
     # Get and display assistant response
     with st.chat_message("assistant"):
-        # Use the appropriate assistant based on context
+    # Use the appropriate assistant based on context
         if "summary" in st.session_state:
             response = tax_qa_assistant_respond(user_input)
         else:
             response = assistant_respond_with_llm(user_input)
         
-        st.markdown(response)
+        formatted_response = response.replace("\n", "  \n")  # Add Markdown-compatible line breaks
+        st.markdown(formatted_response)
+
     
     # Add assistant response to history
     st.session_state.chat_history.append({"role": "assistant", "content": response})
