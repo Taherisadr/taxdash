@@ -24,6 +24,35 @@ if "chat_history" not in st.session_state:
         {"role": "assistant", "content": "I'm your Tax Assistant. Ask me if you have any question."}
     ]
 
+# === Text Refinement with LLM ===
+def reformat_text_with_llm(raw_text: str) -> str:
+    prompt = (
+        "You are a formatting assistant. Your job is to clean and reformat the following text so that:\n"
+        "- Words and numbers are properly spaced.\n"
+        "- Punctuation is correct.\n"
+        "- Paragraphs are separated clearly.\n"
+        "- No information is added or removed.\n\n"
+        "Fix this:\n\n" + raw_text
+    )
+
+    payload = {
+        "model": MODEL,
+        "messages": [
+            {"role": "system", "content": "You clean up model outputs by fixing spacing, punctuation, and formatting."},
+            {"role": "user", "content": prompt}
+        ]
+    }
+
+    try:
+        with st.spinner("🧹 Cleaning up response..."):
+            response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=HEADERS, json=payload, timeout=30)
+        if response.status_code == 200:
+            return response.json()["choices"][0]["message"]["content"]
+        else:
+            return f"❌ Cleanup LLM failed: {response.status_code} - {response.text}"
+    except Exception as e:
+        return f"⚠️ Cleanup error: {str(e)}"
+
 # === PDF Processing ===
 def extract_text_from_pdf(uploaded_file) -> str:
     with pdfplumber.open(uploaded_file) as pdf:
@@ -89,36 +118,7 @@ Extract the fields and respond only with JSON.
         st.error(f"❌ OpenRouter API failed: {response.status_code}\n{response.text}")
         return {}
 
-# --- Text Refinement with LLM ---
-def reformat_text_with_llm(raw_text: str) -> str:
-    prompt = (
-        "You are a formatting assistant. Your job is to clean and reformat the following text so that:\n"
-        "- Words and numbers are properly spaced.\n"
-        "- Punctuation is correct.\n"
-        "- Paragraphs are separated clearly.\n"
-        "- No information is added or removed.\n\n"
-        "Fix this:\n\n" + raw_text
-    )
-
-    payload = {
-        "model": MODEL,
-        "messages": [
-            {"role": "system", "content": "You clean up model outputs by fixing spacing, punctuation, and formatting."},
-            {"role": "user", "content": prompt}
-        ]
-    }
-
-    try:
-        with st.spinner("🧹 Cleaning up response..."):
-            response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=HEADERS, json=payload, timeout=30)
-        if response.status_code == 200:
-            return response.json()["choices"][0]["message"]["content"]
-        else:
-            return f"❌ Cleanup LLM failed: {response.status_code} - {response.text}"
-    except Exception as e:
-        return f"⚠️ Cleanup error: {str(e)}"
-
-# === Chat Interface (bottom) ===
+# === Chat Interface (always at the bottom) ===
 st.markdown("---")
 st.subheader("🤖 Chat with GreenGrowth CPAs Tax Assistant")
 
@@ -127,13 +127,12 @@ for message in st.session_state.chat_history:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Chat input
+# Main chat input
 if user_input := st.chat_input("Ask a question about your taxes..."):
     st.session_state.chat_history.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Get and process assistant response
     with st.chat_message("assistant"):
         if "summary" in st.session_state:
             response = tax_qa_assistant_respond(user_input)
