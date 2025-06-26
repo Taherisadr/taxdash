@@ -5,6 +5,7 @@ import requests
 import re
 import html
 from io import BytesIO
+import re
 
 # --- Streamlit page setup ---
 st.set_page_config(page_title="AI Tax Agent", layout="centered")
@@ -31,6 +32,8 @@ def extract_text_from_pdf(uploaded_file) -> str:
     with pdfplumber.open(uploaded_file) as pdf:
         texts = [page.extract_text() for page in pdf.pages if page.extract_text()]
     return "\n".join(texts)
+
+
 
 # === Field Extraction with LLM ===
 def extract_fields_from_text(text: str) -> dict:
@@ -325,8 +328,15 @@ if user_input := st.chat_input("Ask a question about your taxes..."):
         else:
             response = assistant_respond_with_llm(user_input)
         
-        formatted_response = response.replace("\n", "  \n")  # Add Markdown-compatible line breaks
-        st.markdown(formatted_response)
+        
+        
+        def escape_markdown(text):
+            import re
+            return re.sub(r'([*_`])', r'\\\1', text).replace("\n", "  \n")
+
+        escaped = escape_markdown(response)
+        st.markdown(escaped)
+
 
     
     # Add assistant response to history
