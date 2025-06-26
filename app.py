@@ -8,7 +8,7 @@ from io import BytesIO
 
 # --- Streamlit page setup ---
 st.set_page_config(page_title="AI Tax Agent", layout="centered")
-st.title("📄 AI Tax Agent - W-2 Tax Return Prototype")
+st.title("Welcome to GreenGrowth CPAs Tax Agent")
 
 # === OpenRouter Configuration ===
 OPENROUTER_API_KEY = st.secrets["api_keys"]["OPENROUTER_API_KEY"]
@@ -245,7 +245,7 @@ def tax_qa_assistant_respond(question: str) -> str:
         return f"⚠️ Failed to answer: {str(e)}"
 
 # === Main App ===
-st.markdown("### Step 1: Upload your W-2 PDF file")
+st.markdown("### Upload your W-2 PDF file")
 uploaded_file = st.file_uploader("Choose a W-2 PDF to upload", type=["pdf"], key="w2_uploader")
 
 # View 2: Show the final summary if it's already calculated
@@ -282,7 +282,7 @@ elif uploaded_file:
     extracted_data = extract_fields_from_text(raw_text)
     if extracted_data:
         st.session_state["extracted_data"] = extracted_data
-        st.markdown("### Step 2: Provide additional tax info")
+        st.markdown("### Provide additional tax info")
 
         filing_status = st.selectbox("Select your Filing Status", options=[
             "single", "married_filing_jointly", "married_filing_separately", "head_of_household"])
@@ -316,7 +316,7 @@ if user_input := st.chat_input("Ask a question about your taxes..."):
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Get and display assistant response
+    # Get and display assistant's response
     with st.chat_message("assistant"):
     # Use the appropriate assistant based on context
         if "summary" in st.session_state:
