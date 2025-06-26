@@ -164,13 +164,33 @@ def compute_tax_summary(data: dict, filing_status: str, additional_deductions: f
     except Exception as e:
         st.error(f"Error in tax computation: {e}")
         return {}
-
-# === Generate HTML Tax Return ===
 def generate_tax_return_html(summary: dict) -> str:
     esc = lambda x: html.escape(str(x))
     html_content = f"""
     <html>
-    <head><title>Simple Tax Return - {esc(summary.get('Filing Year',''))}</title></head>
+    <head>
+        <title>Simple Tax Return - {esc(summary.get('Filing Year',''))}</title>
+        <style>
+            body {{
+                font-family: sans-serif;
+                background-color: transparent;
+                color: inherit;
+            }}
+            h2 {{
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }}
+            p {{
+                margin: 0.4rem 0;
+            }}
+            strong {{
+                font-weight: 600;
+            }}
+            h3 {{
+                margin-top: 1rem;
+            }}
+        </style>
+    </head>
     <body>
         <h2>Simple Tax Return Summary</h2>
         <p><strong>Employee Name:</strong> {esc(summary.get('Employee Name',''))}</p>
@@ -188,6 +208,7 @@ def generate_tax_return_html(summary: dict) -> str:
     </html>
     """
     return html_content
+
 
 # === Chatbot Response ===
 def assistant_respond_with_llm(user_input):
@@ -251,8 +272,8 @@ uploaded_file = st.file_uploader("Choose a W-2 PDF to upload", type=["pdf"], key
 # View 2: Show the final summary if it's already calculated
 if "summary" in st.session_state:
     summary = st.session_state["summary"]
-    st.subheader("📊 Tax Summary")
-    st.json(summary)
+    #st.subheader("📊 Tax Summary")
+    #st.json(summary)
 
     tax_return_html = generate_tax_return_html(summary)
     st.markdown("---")
