@@ -169,29 +169,9 @@ def generate_tax_return_html(summary: dict) -> str:
     html_content = f"""
     <html>
     <head>
-        <title>Simple Tax Return - {esc(summary.get('Filing Year',''))}</title>
-        <style>
-            body {{
-                font-family: sans-serif;
-                background-color: transparent;
-                color: inherit;
-            }}
-            h2 {{
-                font-size: 1.5rem;
-                margin-bottom: 1rem;
-            }}
-            p {{
-                margin: 0.4rem 0;
-            }}
-            strong {{
-                font-weight: 600;
-            }}
-            h3 {{
-                margin-top: 1rem;
-            }}
-        </style>
+        <title>Tax Return - {esc(summary.get('Filing Year',''))}</title>
     </head>
-    <body>
+    <body style="font-family: sans-serif; background-color: #111; color: #fff; padding: 20px;">
         <h2>Simple Tax Return Summary</h2>
         <p><strong>Employee Name:</strong> {esc(summary.get('Employee Name',''))}</p>
         <p><strong>Employer Name:</strong> {esc(summary.get('Employer Name',''))}</p>
